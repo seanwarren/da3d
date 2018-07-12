@@ -4,10 +4,7 @@
 
 #include <cmath>
 #include "Utils.hpp"
-
-extern "C" {
-#include "iio.h"
-}
+#include <algorithm>
 
 using std::string;
 using std::vector;
@@ -38,6 +35,12 @@ const char *pick_option(int *c, char **v, const char *o, const char *d) {
   return d;
 }
 
+#ifndef WIN32
+extern "C" {
+#include "iio.h"
+}
+
+
 Image read_image(const string &filename) {
   int w, h, c;
   float *data = iio_read_image_float_vec(filename.c_str(), &w, &h, &c);
@@ -53,6 +56,7 @@ void save_image(const Image &image, const string &filename) {
                            image.rows(),
                            image.channels());
 }
+#endif
 
 pair<int, int> ComputeTiling(int rows, int columns, int tiles) {
   float best_r = sqrt(static_cast<float>(tiles * rows) / columns);
